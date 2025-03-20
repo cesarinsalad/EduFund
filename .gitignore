@@ -1,0 +1,24 @@
+# Archivos de configuración con credenciales
+config/db_credentials.php
+
+# Archivos de dependencias
+/vendor/
+/node_modules/
+
+# Archivos de caché
+*.cache
+
+# Archivos de logs
+/logs/
+*.log
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de entorno
+.env
+
+# Directorio de uploads (excepto el index.php vacío para mantener la estructura)
+/uploads/*
+!/uploads/index.php
