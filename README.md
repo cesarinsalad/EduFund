@@ -45,7 +45,3 @@ EduFund es una plataforma web de crowdfunding similar a GoFundMe, pero especiali
 3. Transparencia y seguimiento de campañas
 4. Integración con pasarelas de pago
 5. Compartir en redes sociales
-
-## Licencia
-
-Este proyecto está bajo la licencia MIT. Ver archivo LICENSE para más detalles.
