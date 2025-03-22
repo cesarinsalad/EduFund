@@ -26,3 +26,8 @@ CREATE TABLE `student_profiles` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `student_profiles_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Insertar un administrador por defecto
+INSERT INTO `users` (`name`, `email`, `password`, `user_type`, `status`) VALUES
+('Admin', 'admin@edufund.com', '$2y$10$ZQvFJMLVFLDGkIN9x7DnW.JdoJJDn092.SZGcJyy16nGKE78IcC4e', 'admin', 'active');
+-- Contraseña: admin123
