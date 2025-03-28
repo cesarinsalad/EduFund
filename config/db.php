@@ -5,14 +5,30 @@ define('DB_USER', 'root'); // Usuario predeterminado en Laragon
 define('DB_PASS', '');     // Contraseña vacía por defecto en Laragon
 define('DB_NAME', 'edufund');
 
-// Crear conexión
-$conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-
-// Verificar conexión
-if ($conn->connect_error) {
-    die("Conexión fallida: " . $conn->connect_error);
+class Database {
+    private $host = DB_HOST;
+    private $user = DB_USER;
+    private $pass = DB_PASS;
+    private $dbname = DB_NAME;
+    
+    public $conn;
+    
+    public function getConnection() {
+        $this->conn = null;
+        
+        try {
+            $this->conn = new PDO(
+                "mysql:host=" . $this->host . ";dbname=" . $this->dbname,
+                $this->user,
+                $this->pass
+            );
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->conn->exec("set names utf8");
+        } catch(PDOException $e) {
+            echo "Connection error: " . $e->getMessage();
+        }
+        
+        return $this->conn;
+    }
 }
-
-// Configurar charset
-$conn->set_charset("utf8mb4");
 ?>

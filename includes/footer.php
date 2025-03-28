@@ -3,7 +3,7 @@
         <div class="mx-auto max-w-screen-xl space-y-8 px-4 py-16 sm:px-6 lg:space-y-16 lg:px-8">
             <div class="sm:flex sm:items-center sm:justify-between">
                 <div class="text-teal-600 dark:text-teal-300">
-                    <a class="block text-blue-600 dark:text-blue-300" href="#">
+                    <a class="block text-blue-600 dark:text-blue-300" href="../index.php">
                     <span class="sr-only">Inicio</span>
                     <img src="assets/img/logo-edufund.svg" alt="EduFund Logo" class="h-32">
                     </a>

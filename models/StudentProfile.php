@@ -1,57 +1,126 @@
 <?php
-// models/StudentProfile.php
 class StudentProfile {
     private $conn;
+    private $table = 'student_profiles';
+    
+    // Propiedades
+    public $id;
+    public $user_id;
+    public $full_name;
+    public $institution;
+    public $educational_level;
+    public $document_number;
+    public $bio;
+    public $profile_picture;
+    public $verification_status;
+    public $verification_documents;
+    public $verification_notes;
     
     public function __construct($db) {
         $this->conn = $db;
     }
     
     // Crear perfil de estudiante
-    public function create($user_id, $institution, $study_program, $student_id, $verification_document = null, $bio = null) {
-        $query = "INSERT INTO student_profiles (user_id, institution, study_program, student_id, verification_document, bio) 
-                  VALUES (?, ?, ?, ?, ?, ?)";
+    public function create() {
+        $query = "INSERT INTO " . $this->table . " 
+                  SET user_id = :user_id, 
+                      full_name = :full_name, 
+                      institution = :institution, 
+                      educational_level = :educational_level,
+                      document_number = :document_number,
+                      bio = :bio,
+                      profile_picture = :profile_picture,
+                      verification_documents = :verification_documents";
         
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("isssss", $user_id, $institution, $study_program, $student_id, $verification_document, $bio);
         
-        if ($stmt->execute()) {
-            // Actualizar el tipo de usuario a estudiante
-            $user_query = "UPDATE users SET user_type = 'student', verification_status = 'pending' WHERE id = ?";
-            $user_stmt = $this->conn->prepare($user_query);
-            $user_stmt->bind_param("i", $user_id);
-            $user_stmt->execute();
-            
-            return [
-                "success" => true,
-                "profile_id" => $this->conn->insert_id,
-                "message" => "Perfil de estudiante creado exitosamente"
-            ];
-        } else {
-            return [
-                "success" => false,
-                "message" => "Error al crear el perfil: " . $stmt->error
-            ];
+        // Limpiar datos
+        $this->user_id = htmlspecialchars(strip_tags((string)$this->user_id));
+        $this->full_name = htmlspecialchars(strip_tags((string)$this->full_name));
+        $this->institution = htmlspecialchars(strip_tags((string)$this->institution));
+        $this->educational_level = htmlspecialchars(strip_tags((string)$this->educational_level));
+        $this->document_number = htmlspecialchars(strip_tags((string)$this->document_number));
+        $this->bio = htmlspecialchars(strip_tags((string)$this->bio));
+        
+        // Vincular los parámetros
+        $stmt->bindParam(':user_id', $this->user_id);
+        $stmt->bindParam(':full_name', $this->full_name);
+        $stmt->bindParam(':institution', $this->institution);
+        $stmt->bindParam(':educational_level', $this->educational_level);
+        $stmt->bindParam(':document_number', $this->document_number);
+        $stmt->bindParam(':bio', $this->bio);
+        $stmt->bindParam(':profile_picture', $this->profile_picture);
+        $stmt->bindParam(':verification_documents', $this->verification_documents);
+        
+        // Ejecutar query
+        if($stmt->execute()) {
+            return true;
         }
+        
+        return false;
     }
     
-    // Obtener perfil de estudiante por user_id
-    public function getByUserId($user_id) {
-        $query = "SELECT sp.*, u.verification_status 
-                  FROM student_profiles sp
-                  JOIN users u ON sp.user_id = u.id 
-                  WHERE sp.user_id = ?";
-                  
-        $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("i", $user_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
+    // Obtener perfil por user_id
+    public function readByUserId() {
+        $query = "SELECT * FROM " . $this->table . " WHERE user_id = :user_id LIMIT 1";
         
-        if ($result->num_rows > 0) {
-            return $result->fetch_assoc();
+        $stmt = $this->conn->prepare($query);
+        
+        $stmt->bindParam(':user_id', $this->user_id);
+        
+        $stmt->execute();
+        
+        if($stmt->rowCount() > 0) {
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            $this->id = $row['id'];
+            $this->full_name = $row['full_name'];
+            $this->institution = $row['institution'];
+            $this->educational_level = $row['educational_level'];
+            $this->document_number = $row['document_number'];
+            $this->bio = $row['bio'];
+            $this->profile_picture = $row['profile_picture'];
+            $this->verification_status = $row['verification_status'];
+            $this->verification_documents = $row['verification_documents'];
+            $this->verification_notes = $row['verification_notes'];
+            
+            return true;
         }
         
-        return null;
+        return false;
     }
+
+    /**
+    * Cuenta las verificaciones pendientes
+    * 
+    * NOTA: En esta fase devuelve un valor de muestra.
+    * La implementación real se hará en la Fase 4.
+    */
+    
+    public function countPendingVerifications() {
+        $query = "SELECT COUNT(*) as total FROM " . $this->table . " WHERE verification_status = 'pending'";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return $row['total'];
+    }
+
+/**
+* Obtiene la lista de estudiantes pendientes de verificación
+*/
+public function getPendingVerifications() {
+    // Modificar la consulta para incluir u.created_at
+    $query = "SELECT sp.*, u.username, u.created_at 
+              FROM " . $this->table . " sp
+              JOIN users u ON sp.user_id = u.id 
+              WHERE sp.verification_status = 'pending'
+              ORDER BY sp.id DESC";
+    
+    $stmt = $this->conn->prepare($query);
+    $stmt->execute();
+    
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 }
 ?>
