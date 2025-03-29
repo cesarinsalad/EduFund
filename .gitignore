@@ -22,3 +22,6 @@ Thumbs.db
 # Directorio de uploads (excepto el index.php vacío para mantener la estructura)
 /uploads/*
 !/uploads/index.php
+
+# Workspace
+edufund.code-workspace
