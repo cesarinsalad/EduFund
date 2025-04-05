@@ -7,7 +7,6 @@ class DonorProfile {
     public $id;
     public $user_id;
     public $full_name;
-    public $preferred_payment_method;
     public $display_name;
     public $donation_privacy;
     
@@ -57,7 +56,6 @@ class DonorProfile {
             
             $this->id = $row['id'];
             $this->full_name = $row['full_name'];
-            $this->preferred_payment_method = $row['preferred_payment_method'];
             $this->display_name = $row['display_name'];
             $this->donation_privacy = $row['donation_privacy'];
             

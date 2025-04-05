@@ -6,42 +6,115 @@
             <p class="mt-4 max-w-lg text-white sm:text-xl/relaxed">Tu apoyo puede cambiar la vida de un estudiante. Juntos, podemos proporcionar los recursos necesarios para que cada uno de ellos alcance sus sueños.</p>
             <div class="mt-8 flex flex-wrap gap-4 text-left">
                 <a href="#" class="inline-block text-center rounded-sm bg-blue-600 px-6 py-3 text-sm font-medium text-white shadow-sm hover:bg-blue-900 focus:ring-3 focus:outline-hidden dark:bg-blue-700 dark:hover:bg-blue-800">Donar Ahora</a>
-                <a href="#" class="inline-block text-center rounded-sm bg-white px-6 py-3 text-sm font-medium text-blue-600 shadow-sm hover:text-blue-900 focus:ring-3 focus:outline-hidden dark:bg-gray-800 dark:text-blue-400 dark:hover:text-blue-300 focus:ring-3 focus:outline-hidden">Explorar Campañas</a>
+                <a href="index.php?page=campaigns" class="inline-block text-center rounded-sm bg-white px-6 py-3 text-sm font-medium text-blue-600 shadow-sm hover:text-blue-900 focus:ring-3 focus:outline-hidden dark:bg-gray-800 dark:text-blue-400 dark:hover:text-blue-300 focus:ring-3 focus:outline-hidden">Explorar Campañas</a>
             </div>
         </div>
     </div>  
 </section>
 
-<section class="py-16 bg-white dark:bg-gray-900">
+<!-- Añadir después de la sección de hero/banner -->
+
+<section class="py-12 bg-gray-50 dark:bg-gray-900">
     <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold text-center mb-10 dark:text-white">Campañas Destacadas</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Marcadores de posición para campañas -->
-            <?php for ($i = 1; $i <= 3; $i++) : ?>
-                <div class="campaign-card border rounded-lg overflow-hidden shadow-lg dark:border-gray-700 dark:bg-gray-800">
-                    <img src="https://via.placeholder.com/600x300" alt="Campaña" class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold mb-2 dark:text-white">Ayúdame a comprar una laptop para mis estudios</h3>
-                        <p class="text-gray-700 mb-4 dark:text-gray-300">Soy estudiante de ingeniería y necesito una computadora para continuar mis estudios...</p>
-                        <div class="mb-4">
-                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                                <div class="bg-blue-600 dark:bg-blue-500 h-2.5 rounded-full" style="width: 65%"></div>
-                            </div>
-                            <div class="flex justify-between mt-2 text-sm dark:text-gray-300">
-                                <span>$650 recaudados</span>
-                                <span>Meta: $1,000</span>
-                            </div>
-                        </div>
-                        <a href="#" class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600">Ver detalles</a>
-                    </div>
-                </div>
-            <?php endfor; ?>
+        <div class="text-center mb-10">
+            <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">Campañas Destacadas</h2>
+            <p class="text-gray-600 dark:text-gray-400">Ayuda a estos estudiantes a alcanzar sus metas educativas</p>
         </div>
-        <div class="text-center mt-10">
-            <a href="#" class="inline-block border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-lg font-bold hover:bg-blue-600 hover:text-white dark:text-blue-400 dark:border-blue-400 dark:hover:bg-blue-700">Ver más campañas</a>
+        
+        <div id="featured-campaigns" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Esta sección se llenará con AJAX desde un script JS o puedes cargarla directamente desde PHP -->
+            <div class="text-center py-8">
+                <div class="animate-pulse">
+                    <div class="rounded-lg bg-gray-200 dark:bg-gray-700 h-40 mb-4"></div>
+                    <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mx-auto mb-2"></div>
+                    <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mx-auto"></div>
+                </div>
+                <p class="mt-4 text-gray-500 dark:text-gray-400">Cargando campañas...</p>
+            </div>
+        </div>
+        
+        <div class="text-center mt-8">
+            <a href="index.php?page=campaigns" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors">
+                Ver Todas las Campañas
+            </a>
         </div>
     </div>
 </section>
+
+<script>
+// Proceso de carga de campañas destacadas 
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('api/featured_campaigns.php?action=get_featured')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.campaigns.length > 0) {
+                const container = document.getElementById('featured-campaigns');
+                container.innerHTML = '';
+                
+                data.campaigns.forEach(campaign => {
+                    // Calcular porcentaje
+                    const percentage = (campaign.goal_amount > 0) 
+                        ? Math.min(100, Math.round((campaign.current_amount / campaign.goal_amount) * 100)) 
+                        : 0;
+                    
+                    // Crear elemento de campaña
+                    const campaignElement = document.createElement('div');
+                    campaignElement.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow';
+                    campaignElement.innerHTML = `
+                        <a href="index.php?page=campaign&slug=${campaign.slug}">
+                            ${campaign.campaign_image 
+                                ? `<img src="${campaign.campaign_image}" alt="${campaign.title}" class="w-full h-40 object-cover">` 
+                                : `<div class="w-full h-40 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                                     <span class="text-gray-500 dark:text-gray-400">Sin imagen</span>
+                                   </div>`
+                            }
+                            
+                            <div class="p-4">
+                                <div class="flex justify-between items-start mb-2">
+                                    <span class="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs font-medium px-2.5 py-0.5 rounded">
+                                        ${campaign.category}
+                                    </span>
+                                </div>
+                                
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-3 line-clamp-2">
+                                    ${campaign.title}
+                                </h3>
+                                
+                                <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-2">
+                                    <div class="bg-blue-600 h-2.5 rounded-full" style="width: ${percentage}%"></div>
+                                </div>
+                                
+                                <div class="flex justify-between text-sm">
+                                    <span class="font-semibold text-gray-800 dark:text-white">$${parseFloat(campaign.current_amount).toLocaleString('es-MX')}</span>
+                                    <span class="text-gray-600 dark:text-gray-400">${percentage}% de $${parseFloat(campaign.goal_amount).toLocaleString('es-MX')}</span>
+                                </div>
+                            </div>
+                        </a>
+                    `;
+                    
+                    container.appendChild(campaignElement);
+                });
+            } else {
+                document.getElementById('featured-campaigns').innerHTML = `
+                    <div class="col-span-3 text-center py-8">
+                        <p class="text-gray-500 dark:text-gray-400">No hay campañas destacadas en este momento.</p>
+                        <a href="index.php?page=create_campaign" class="inline-block mt-4 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                            ¿Eres estudiante? Crea tu campaña
+                        </a>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error cargando campañas destacadas:', error);
+            document.getElementById('featured-campaigns').innerHTML = `
+                <div class="col-span-3 text-center py-8">
+                    <p class="text-gray-500 dark:text-gray-400">Error al cargar campañas. Intenta nuevamente más tarde.</p>
+                </div>
+            `;
+        });
+});
+</script>
 
 <section class="bg-gray-100 py-16 dark:bg-gray-800">
     <div class="container mx-auto px-4">

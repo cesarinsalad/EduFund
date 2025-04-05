@@ -6,6 +6,14 @@ session_start();
 require_once 'config/db.php';
 require_once 'config/config.php';
 
+// Inicializar base de datos
+$database = new Database();
+$db = $database->getConnection();
+
+// Inicializar controladores
+require_once 'controllers/CampaignController.php';
+$campaignController = new CampaignController($db);
+
 // Determinar la página solicitada
 $page = isset($_GET['page']) ? $_GET['page'] : 'home';
 
@@ -19,6 +27,10 @@ if (!in_array($page, $skip_header)) {
 switch ($page) {
     case 'home':
         include 'views/home.php';
+        break;
+    
+    case 'home-campaign':
+        include 'views/home-campaign.php';
         break;
         
     case 'login':
@@ -35,6 +47,23 @@ switch ($page) {
         
     case 'register_process':
         include 'views/auth/register_process.php';
+        break;
+
+    case 'campaigns':
+        $campaignController->listCampaigns();
+        break;
+            
+    case 'campaign':
+        $slug = isset($_GET['slug']) ? $_GET['slug'] : null;
+        $campaignController->viewCampaign($slug);
+        break;
+            
+    case 'create_campaign':
+        $campaignController->createCampaign();
+        break;
+            
+    case 'my_campaigns':
+        $campaignController->studentCampaigns();
         break;
         
     case 'logout':

@@ -1,5 +1,5 @@
 <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6">Panel de Administración</h1>
+    <h1 class="text-3xl font-bold text-center mb-6 text-black dark:text-white">Panel de Administración</h1>
     
     <!-- Tarjetas de estadísticas -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">

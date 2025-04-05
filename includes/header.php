@@ -51,7 +51,7 @@ $profile_picture_url = isset($_SESSION['profile_picture']) && !empty($_SESSION['
         <nav aria-label="Global" class="hidden lg:block">
           <ul class="flex items-center gap-6 md:gap-8 text-sm whitespace-nowrap">
             <li><a class="text-gray-500 transition hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-300" href="#">Donar Ahora</a></li>
-            <li><a class="text-gray-500 transition hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-300" href="#">Crear Campaña</a></li>
+            <li><a class="text-gray-500 transition hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-300" href="index.php?page=home-campaign">Crear Campaña</a></li>
             <li><a class="text-gray-500 transition hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-300" href="#">Nosotros</a></li>
             <li><a class="text-gray-500 transition hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-300" href="#">Preguntas Frecuentes</a></li>
           </ul>
@@ -81,7 +81,7 @@ $profile_picture_url = isset($_SESSION['profile_picture']) && !empty($_SESSION['
                     src="<?php echo $profile_picture_url; ?>"
                     alt="Foto de perfil"
                     class="profile-img rounded-full border border-gray-200 dark:border-gray-700 h-10 w-10"
-                    onerror="this.onerror=null; this.src='../assets/img/default-avatar.svg';" // Fallback si la imagen no carga
+                    onerror="this.onerror=null; this.src='../assets/img/default-avatar.svg';"
                 >
 
 <form method="post">

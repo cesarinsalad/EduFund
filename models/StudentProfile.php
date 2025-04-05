@@ -122,5 +122,21 @@ public function getPendingVerifications() {
     
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+public function updateVerificationStatus($user_id, $status) {
+    $query = "UPDATE student_profiles SET verification_status = ? WHERE user_id = ?";
+    $stmt = $this->conn->prepare($query);
+    $stmt->bind_param("si", $status, $user_id);
+    
+    $result = $stmt->execute();
+    
+    // Si la actualización fue exitosa, sincronizar con users
+    if ($result) {
+        require_once 'models/UserUtility.php';
+        $utility = new UserUtility($this->conn);
+        $utility->syncVerificationStatus($user_id, 'student_profiles', $status);
+    }
+    
+    return $result;
+}
 }
 ?>

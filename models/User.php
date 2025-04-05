@@ -169,5 +169,32 @@ class User {
         }
         return false;
     }
+
+    // Añadir este método a la clase User existente
+
+public function updateStatus($user_id, $status) {
+    $query = "UPDATE users SET status = ? WHERE id = ?";
+    $stmt = $this->conn->prepare($query);
+    $stmt->bind_param("si", $status, $user_id);
+    
+    $result = $stmt->execute();
+    
+    // Si la actualización fue exitosa y es un estudiante, sincronizar
+    if ($result) {
+        $query = "SELECT role FROM users WHERE id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $user = $stmt->get_result()->fetch_assoc();
+        
+        if ($user && $user['role'] == 'student') {
+            require_once 'models/UserUtility.php';
+            $utility = new UserUtility($this->conn);
+            $utility->syncVerificationStatus($user_id, 'users', $status);
+        }
+    }
+    
+    return $result;
+}
 }
 ?>
