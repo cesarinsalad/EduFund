@@ -5,25 +5,30 @@ include_once 'includes/header.php';
 ?>
 
 <div class="container mx-auto px-4 py-8">
-    <div class="flex flex-col md:flex-row justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-4 md:mb-0">Explorar Campañas</h1>
-        
+    <h1 class="text-3xl text-center font-bold text-gray-800 dark:text-white mb-4 pb-5 md:mb-0">Explorar Campañas</h1>
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8">      
         <!-- Filtros -->
         <div class="flex flex-wrap gap-2">
             <a href="index.php?page=campaigns" class="px-4 py-2 rounded-full <?php echo !isset($_GET['category']) ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white'; ?>">
                 Todas
             </a>
-            <a href="index.php?page=campaigns&category=Licenciatura" class="px-4 py-2 rounded-full <?php echo (isset($_GET['category']) && $_GET['category'] == 'Licenciatura') ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white'; ?>">
-                Licenciatura
+            <a href="index.php?page=campaigns&category=Material+Didactico" class="px-4 py-2 rounded-full <?php echo (isset($_GET['category']) && $_GET['category'] == 'Licenciatura') ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white'; ?>">
+                Material Didáctico
             </a>
-            <a href="index.php?page=campaigns&category=Maestría" class="px-4 py-2 rounded-full <?php echo (isset($_GET['category']) && $_GET['category'] == 'Maestría') ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white'; ?>">
-                Maestría
+            <a href="index.php?page=campaigns&category=Equipos+Electronicos" class="px-4 py-2 rounded-full <?php echo (isset($_GET['category']) && $_GET['category'] == 'Maestría') ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white'; ?>">
+                Equipos Electrónicos
             </a>
-            <a href="index.php?page=campaigns&category=Doctorado" class="px-4 py-2 rounded-full <?php echo (isset($_GET['category']) && $_GET['category'] == 'Doctorado') ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white'; ?>">
-                Doctorado
+            <a href="index.php?page=campaigns&category=Investigacion+y+Desarrollo" class="px-4 py-2 rounded-full <?php echo (isset($_GET['category']) && $_GET['category'] == 'Doctorado') ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white'; ?>">
+                Investigación y Desarrollo
             </a>
-            <a href="index.php?page=campaigns&category=Material+Educativo" class="px-4 py-2 rounded-full <?php echo (isset($_GET['category']) && $_GET['category'] == 'Material Educativo') ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white'; ?>">
-                Material Educativo
+            <a href="index.php?page=campaigns&category=Viajes+Educativos" class="px-4 py-2 rounded-full <?php echo (isset($_GET['category']) && $_GET['category'] == 'Material Educativo') ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white'; ?>">
+                Viajes Educativos
+            </a>
+            <a href="index.php?page=campaigns&category=Talleres+y+Capacitaciones" class="px-4 py-2 rounded-full <?php echo (isset($_GET['category']) && $_GET['category'] == 'Material Educativo') ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white'; ?>">
+                Talleres y Capacitaciones
+            </a>
+            <a href="index.php?page=campaigns&category=Matricula" class="px-4 py-2 rounded-full <?php echo (isset($_GET['category']) && $_GET['category'] == 'Material Educativo') ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white'; ?>">
+                Matrícula
             </a>
         </div>
     </div>

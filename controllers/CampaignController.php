@@ -95,16 +95,22 @@ class CampaignController {
     
     public function viewCampaign($slug = null) {
         if(!$slug) {
-            exit;
+            include_once 'views/404.php'; // Campaña no encontrada.
+            return;
         }
         
         $campaign = $this->campaignModel->getBySlug($slug);
         
         if(!$campaign) {
-            // Campaña no encontrada
-            include_once 'views/404.php';
+            include_once 'views/404.php'; // Campaña no encontrada (igual que antes).
             return;
         }
+
+        // Obtener donaciones para esta campaña
+        require_once 'models/Donation.php';
+        $donationModel = new Donation($this->db);
+        $donations = $donationModel->getByCampaign($campaign['id']);
+        $donorsCount = $donationModel->countByCampaign($campaign['id']);        
         
         // Incluir vista de campaña
         include_once 'views/campaigns/view.php';
@@ -135,5 +141,39 @@ class CampaignController {
         // Incluir vista de campañas del estudiante
         include_once 'views/campaigns/student_campaigns.php';
     }
+
+// Maneja la eliminación de una campaña.
+public function deleteCampaign() {
+    // Verificar si el usuario está autenticado
+    if (!isset($_SESSION['user_id'])) {
+        $_SESSION['error'] = 'Debes iniciar sesión para realizar esta acción.';
+        header('Location: index.php?page=login');
+        exit;
+    }
+
+    // Verificar si se proporcionó un ID de campaña
+    if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+        $_SESSION['error'] = 'ID de campaña inválido.';
+        header('Location: index.php?page=student_dashboard');
+        exit;
+    }
+
+    $campaign_id = (int)$_GET['id'];
+    $user_id = (int)$_SESSION['user_id'];
+
+    // Depuración
+    error_log("Solicitud de eliminación - Campaña: $campaign_id, Usuario: $user_id");
+
+    // Intentar eliminar la campaña
+    if ($this->campaignModel->delete($campaign_id, $user_id)) {
+        $_SESSION['success'] = 'La campaña ha sido eliminada correctamente.';
+    } else {
+        $_SESSION['error'] = 'No se pudo eliminar la campaña. Verifica que seas el propietario de la misma.';
+    }
+
+    // Redirigir al dashboard
+    header('Location: index.php?page=student_dashboard');
+    exit;
+}
 }
 ?>

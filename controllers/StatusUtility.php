@@ -8,14 +8,6 @@ class UserUtility {
         $this->conn = $db;
     }
     
-    /**
-     * Sincroniza el estado de verificación entre las tablas users y student_profiles
-     * 
-     * @param int $user_id El ID del usuario a sincronizar
-     * @param string $table La tabla que se actualizó ('users' o 'student_profiles')
-     * @param string $status El nuevo estado
-     * @return bool True si la sincronización tuvo éxito
-     */
     public function syncVerificationStatus($user_id, $table, $status) {
         try {
             if ($table == 'users') {

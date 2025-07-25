@@ -1,5 +1,20 @@
 <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold text-center mb-6 text-black dark:text-white">Panel de Administración</h1>
+
+        <!-- Mensajes de éxito/error -->
+        <?php if(isset($_SESSION['success'])): ?>
+        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
+            <p><?php echo $_SESSION['success']; ?></p>
+            <?php unset($_SESSION['success']); ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if(isset($_SESSION['error'])): ?>
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
+            <p><?php echo $_SESSION['error']; ?></p>
+            <?php unset($_SESSION['error']); ?>
+        </div>
+    <?php endif; ?>
     
     <!-- Tarjetas de estadísticas -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -174,12 +189,12 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?php echo date('d/m/Y', strtotime($verification['created_at'])); ?></td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex space-x-2">
-                                        <a href="index.php?page=admin_verify&id=<?php echo $verification['id']; ?>&action=approve" class="text-green-600 hover:text-green-900">
+                                        <a href="index.php?page=process_verification&id=<?php echo $verification['id']; ?>&action=approve" class="text-green-600 hover:text-green-900">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                             </svg>
                                         </a>
-                                        <a href="index.php?page=admin_verify&id=<?php echo $verification['id']; ?>&action=reject" class="text-red-600 hover:text-red-900">
+                                        <a href="index.php?page=process_verification&id=<?php echo $verification['id']; ?>&action=reject" class="text-red-600 hover:text-red-900">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                             </svg>
@@ -235,9 +250,9 @@
                                             <img class="h-8 w-8 rounded mr-2 object-cover" src="<?php echo $campaign['image']; ?>" alt="">
                                         <?php else: ?>
                                             <div class="h-8 w-8 rounded bg-gray-200 flex items-center justify-center mr-2">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                </svg>
+                                            <?php if (!empty($campaign['campaign_image'])): ?>
+                                            <img class="h-8 w-8 rounded object-cover" src="<?php echo $campaign['campaign_image']; ?>" alt="">
+                                        <?php endif; ?>
                                             </div>
                                         <?php endif; ?>
                                         <span class="text-sm font-medium text-gray-900"><?php echo $campaign['title']; ?></span>
@@ -257,7 +272,7 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <?php if($campaign['status'] == 'active'): ?>
+                                    <?php if($campaign['status'] == 'verified'): ?>
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                             Activa
                                         </span>
@@ -289,7 +304,7 @@
                                                 </svg>
                                             </a>
                                         <?php endif; ?>
-                                        <?php if($campaign['status'] != 'cancelled'): ?>
+                                        <?php if($campaign['status'] == 'pending' || $campaign['status'] == 'verified'): ?>
                                             <a href="index.php?page=admin_cancel_campaign&id=<?php echo $campaign['id']; ?>" class="text-red-600 hover:text-red-900">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -314,10 +329,5 @@
                 </tbody>
             </table>
         </div>
-    </div>
-    
-    <!-- Gráficos y estadísticas (se pueden agregar en fases posteriores) -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-        <!-- Espacio reservado para gráficos futuros -->
     </div>
 </div>

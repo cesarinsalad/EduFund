@@ -30,13 +30,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         exit;
     } else {
-        // Mostrar error
-        $error_message = $result['message'];
-        include 'views/auth/login.php';
+        // Redirigir al login con mensaje de error
+        $error_message = urlencode($result['message']);
+        header("Location: index.php?page=login&error_message=$error_message");
+        exit;
     }
-} else {
-    // Si alguien intenta acceder directamente, redirigir al formulario de login
-    header('Location: index.php?page=login');
-    exit;
 }
 ?>

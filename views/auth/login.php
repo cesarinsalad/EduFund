@@ -1,3 +1,10 @@
+<?php
+// Obtener el mensaje de error de la URL si existe
+if (isset($_GET['error_message']) && !empty($_GET['error_message'])) {
+    $error_message = urldecode($_GET['error_message']);
+}
+?>
+
 <div class="container bg-fixed bg-[url('../assets/img/estudiantes-2-blur.jpg')] bg-cover bg-center bg-no-repeat mx-auto px-4 py-8 bg-stone-100 dark:bg-gray-900 pt-32 pb-32">
     <div class="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg">
         <div class="p-6">
@@ -5,7 +12,7 @@
             
             <?php if(isset($error_message) && !empty($error_message)): ?>
                 <div class="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-200 px-4 py-3 rounded mb-4">
-                    <?php echo $error_message; ?>
+                    <?php echo htmlspecialchars($error_message); ?>
                 </div>
             <?php endif; ?>
 

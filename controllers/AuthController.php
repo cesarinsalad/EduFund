@@ -1,9 +1,5 @@
 <?php
-// Asegúrate de que session_start() se llame ANTES de cualquier salida o uso de $_SESSION
-// Es mejor llamarlo en el script principal que instancia este controlador.
-// if (session_status() === PHP_SESSION_NONE) { session_start(); }
-
-require_once __DIR__ . '/../config/db.php'; // Rutas relativas más seguras
+require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/StudentProfile.php';
 require_once __DIR__ . '/../models/DonorProfile.php';
@@ -194,8 +190,7 @@ class AuthController {
             }
 
             // Iniciar sesión (Guardar en $_SESSION)
-            // Asegúrate que session_start() fue llamado antes
-            $_SESSION['user_id'] = $user_data['id'];
+            $_SESSION['user_id'] = (int)$user_data['id'];
             $_SESSION['username'] = $user_data['username'];
             $_SESSION['role'] = $user_data['role'];
 
@@ -268,7 +263,7 @@ class AuthController {
 
         } else {
             // Login fallido según el modelo
-            $response['message'] = $loginResult['message']; // Usar mensaje del modelo
+            $response['message'] = 'El correo electrónico o la contraseña son incorrectos.';
         }
 
         return $response;

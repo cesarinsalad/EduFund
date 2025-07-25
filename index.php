@@ -1,4 +1,7 @@
 <?php
+// Iniciar el buffer de salida
+ob_start(); 
+
 // Iniciar sesión
 session_start();
 
@@ -13,6 +16,10 @@ $db = $database->getConnection();
 // Inicializar controladores
 require_once 'controllers/CampaignController.php';
 $campaignController = new CampaignController($db);
+require_once 'controllers/DonationController.php';
+$donationController = new DonationController($db);
+require_once 'controllers/AdminController.php';
+$adminController = new AdminController($db);
 
 // Determinar la página solicitada
 $page = isset($_GET['page']) ? $_GET['page'] : 'home';
@@ -31,6 +38,18 @@ switch ($page) {
     
     case 'home-campaign':
         include 'views/home-campaign.php';
+        break;
+
+    case 'donar_ahora':
+        include 'views/donar_ahora.php';
+        break;
+
+    case 'faq':
+        include 'views/faq.php';
+        break;
+    
+    case 'nosotros':
+        include 'views/nosotros.php';
         break;
         
     case 'login':
@@ -64,6 +83,38 @@ switch ($page) {
             
     case 'my_campaigns':
         $campaignController->studentCampaigns();
+        break;
+
+    case 'donate':
+        $campaign_id = isset($_GET['campaign']) ? (int)$_GET['campaign'] : 0;
+        $donationController = new DonationController($db);
+        $donationController->showDonationForm($campaign_id);
+        break;
+        
+    case 'process_donation':
+        $donationController = new DonationController($db);
+        $donationController->processDonation();
+        break;
+        
+    case 'donation_complete':
+        $donationController = new DonationController($db);
+        $donationController->completeDonation();
+        break;
+        
+    case 'donation_cancel':
+        $donationController = new DonationController($db);
+        $donationController->cancelDonation();
+        break;
+        
+    case 'user_donations':
+        $donationController = new DonationController($db);
+        $donationController->listUserDonations();
+        break;
+        
+    case 'campaign_donations':
+        $campaign_id = isset($_GET['campaign']) ? (int)$_GET['campaign'] : 0;
+        $donationController = new DonationController($db);
+        $donationController->listCampaignDonations($campaign_id);
         break;
         
     case 'logout':
@@ -100,6 +151,12 @@ switch ($page) {
 
         include 'views/user/student_dashboard.php';
         break;
+
+    case 'delete_campaign':
+        require_once 'controllers/CampaignController.php';
+        $campaignController = new CampaignController($db);
+        $campaignController->deleteCampaign();
+        break;
         
     case 'donor_dashboard':
         // Verificar si el usuario es donante
@@ -121,8 +178,8 @@ switch ($page) {
             
         // Cargar donaciones realizadas
         $donation = new Donation($db);
-        $donations = $donation->getByDonorId($_SESSION['user_id']);
-        $total_donated = $donation->getTotalByDonorId($_SESSION['user_id']);
+        $donations = $donation->getByDonor($_SESSION['user_id']);
+        $total_donated = $donation->getTotalByDonor($_SESSION['user_id']);
             
         // Cargar campañas recomendadas
         require_once 'models/Campaign.php';
@@ -133,38 +190,64 @@ switch ($page) {
         break;
         
     case 'admin_dashboard':
+        $adminController->dashboard();
+        break;
+
+    case 'admin_reports':
         // Verificar si el usuario es administrador
         if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
             header('Location: index.php?page=login');
             exit;
         }
+            
+        $adminController->showReportGenerator();
+        break;
+    
+    case 'generate_report':
+        // Verificar si el usuario es administrador
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+            header('Location: index.php?page=login');
+            exit;
+        }
+            
+        $adminController->generateReport();
+        break;
+    
+    case 'verification_detail':
+        $verification_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+        $adminController->verificationDetail($verification_id);
+        break;
+    
+    case 'process_verification':
+        $adminController->processVerification();
+        break;
+    
+    case 'admin_statistics':
+        $adminController->showStatistics();
+        break;
 
-        require_once 'models/User.php';
-        require_once 'models/Campaign.php';
-        require_once 'models/Donation.php';
-        require_once 'models/StudentProfile.php';
         
-        $database = new Database();
-        $db = $database->getConnection();
+    case 'admin_campaigns':
+        $adminController->showPendingCampaigns();
+        break;
         
-        // Obtener contadores
-        $user = new User($db);
-        $total_users = $user->count();
+    case 'campaign_verification':
+        $campaign_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+        $adminController->showCampaignDetail($campaign_id);
+        break;
         
-        $campaign = new Campaign($db);
-        $total_campaigns = $campaign->count();
-        
-        $donation = new Donation($db);
-        $total_donations = $donation->getTotalAmount();
-        
-        $student = new StudentProfile($db);
-        $pending_verifications = $student->countPendingVerifications();
-        
-        // Obtener listas para las tablas
-        $verifications = $student->getPendingVerifications();
-        $recent_campaigns = $campaign->getRecent(10);
+        case 'process_campaign_verification':
+        $adminController->processCampaignVerification();
+        break;
 
-        include 'views/admin/admin_dashboard.php';
+    case 'admin_approve_campaign':
+        $campaign_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+        $adminController->processCampaignVerification($campaign_id, 'verified');
+        break;
+
+    case 'admin_reject_campaign':
+        $campaign_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+        $adminController->processCampaignVerification($campaign_id, 'rejected');
         break;
         
     default:

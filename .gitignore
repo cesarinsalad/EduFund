@@ -25,3 +25,6 @@ Thumbs.db
 
 # Workspace
 edufund.code-workspace
+
+# Ignorar archivos de configuración
+.env

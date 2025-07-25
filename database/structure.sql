@@ -1,4 +1,4 @@
--- Creación de tabla de usuarios
+-- Creación de tabla de usuarios.
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -10,7 +10,7 @@ CREATE TABLE users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Tabla para información adicional de estudiantes
+-- Tabla para información adicional de estudiantes.
 CREATE TABLE student_profiles (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE student_profiles (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Tabla para información adicional de donantes
+-- Tabla para información adicional de donantes.
 CREATE TABLE donor_profiles (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -36,7 +36,7 @@ CREATE TABLE donor_profiles (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Tabla que almacena datos de las campañas
+-- Tabla que almacena datos de las campañas.
 
 CREATE TABLE campaigns (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -55,4 +55,22 @@ CREATE TABLE campaigns (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Tabla que almacena información de las donaciones realizadas a las campañas.
+
+CREATE TABLE donations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    campaign_id INT NOT NULL,
+    donor_id INT, -- Acepta datos NULL para permitir donaciones anónimas.
+    amount DECIMAL(10,2) NOT NULL,
+    payment_id VARCHAR(255) NOT NULL,
+    payment_status ENUM('pending', 'completed', 'refunded', 'failed') DEFAULT 'pending',
+    donation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    anonymous BOOLEAN DEFAULT FALSE,
+    message TEXT,
+    donor_name VARCHAR(100),
+    donor_email VARCHAR(100),
+    FOREIGN KEY (campaign_id) REFERENCES campaigns(id) ON DELETE CASCADE,
+    FOREIGN KEY (donor_id) REFERENCES users(id) ON DELETE SET NULL
 );

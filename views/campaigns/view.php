@@ -85,13 +85,13 @@ $days_remaining = $interval->invert ? 0 : $interval->days;
             <!-- Descripción -->
             <div class="mb-8">
                 <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Acerca de esta campaña</h2>
-                <div class="prose prose-blue max-w-none dark:prose-invert text-white">
+                <div class="prose prose-blue max-w-none dark:prose-invert text-black dark:text-white">
                     <?php echo nl2br(htmlspecialchars($campaign['description'])); ?>
                 </div>
             </div>
             
             <!-- Botón de donar (se mostrará sólo si la campaña está activa) -->
-            <?php if($campaign['status'] == 'active'): ?>
+            <?php if($campaign['status'] == 'verified'): ?>
                 <div class="mt-6">
                     <a href="index.php?page=donate&campaign=<?php echo $campaign['id']; ?>" 
                        class="w-full block text-center py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors">
@@ -107,6 +107,53 @@ $days_remaining = $interval->invert ? 0 : $interval->days;
                     <p class="font-semibold">¡Esta campaña ha sido completada con éxito!</p>
                 </div>
             <?php endif; ?>
+
+            <!-- Lista de donaciones -->
+            <div class="mt-12 border-t pt-8 dark:border-gray-700">
+                <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-6">
+                    Donaciones (<?php echo $donorsCount; ?>)
+                </h2>
+
+                <?php if(empty($donations)): ?>
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 text-center">
+                        <p class="text-gray-600 dark:text-gray-400">
+                            Esta campaña aún no ha recibido donaciones. ¡Sé el primero en apoyar!
+                        </p>
+                    </div>
+                <?php else: ?>
+                    <div class="space-y-4">
+                        <?php foreach($donations as $donation): ?>
+                            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-300 font-bold">
+                                            <?php echo substr($donation['display_name'], 0, 1); ?>
+                                        </div>
+                                    </div>
+                                    <div class="ml-3 flex-1">
+                                        <div class="flex justify-between items-center">
+                                            <h3 class="text-sm font-medium text-gray-800 dark:text-white">
+                                                <?php echo htmlspecialchars($donation['display_name']); ?>
+                                            </h3>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                                <?php echo date('d M Y', strtotime($donation['donation_date'])); ?>
+                                            </p>
+                                        </div>
+                                        <p class="text-sm text-blue-600 dark:text-blue-400 font-medium mt-1">
+                                            $<?php echo number_format($donation['amount'], 2); ?>
+                                        </p>
+                                        <?php if(!empty($donation['message'])): ?>
+                                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-2">
+                                                <?php echo nl2br(htmlspecialchars($donation['message'])); ?>
+                                            </p>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 </div>

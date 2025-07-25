@@ -63,11 +63,8 @@ class StudentProfile {
     // Obtener perfil por user_id
     public function readByUserId() {
         $query = "SELECT * FROM " . $this->table . " WHERE user_id = :user_id LIMIT 1";
-        
         $stmt = $this->conn->prepare($query);
-        
-        $stmt->bindParam(':user_id', $this->user_id);
-        
+        $stmt->bindParam(':user_id', $this->user_id, PDO::PARAM_INT);
         $stmt->execute();
         
         if($stmt->rowCount() > 0) {
@@ -90,13 +87,7 @@ class StudentProfile {
         return false;
     }
 
-    /**
-    * Cuenta las verificaciones pendientes
-    * 
-    * NOTA: En esta fase devuelve un valor de muestra.
-    * La implementación real se hará en la Fase 4.
-    */
-    
+    // Cuenta las verificaciones pendientes.
     public function countPendingVerifications() {
         $query = "SELECT COUNT(*) as total FROM " . $this->table . " WHERE verification_status = 'pending'";
         $stmt = $this->conn->prepare($query);
@@ -122,21 +113,98 @@ public function getPendingVerifications() {
     
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-public function updateVerificationStatus($user_id, $status) {
-    $query = "UPDATE student_profiles SET verification_status = ? WHERE user_id = ?";
-    $stmt = $this->conn->prepare($query);
-    $stmt->bind_param("si", $status, $user_id);
-    
-    $result = $stmt->execute();
-    
-    // Si la actualización fue exitosa, sincronizar con users
-    if ($result) {
-        require_once 'models/UserUtility.php';
-        $utility = new UserUtility($this->conn);
-        $utility->syncVerificationStatus($user_id, 'student_profiles', $status);
+
+public function updateVerificationStatus($profile_id, $status, $notes, $admin_id = null) {
+    // Validar el estado
+    if (!in_array($status, ['verified', 'rejected', 'pending'])) {
+        return false;
     }
     
-    return $result;
+    try {
+        // Actualizar el perfil del estudiante
+        $query = "UPDATE " . $this->table . " 
+                  SET verification_status = :status, 
+                      verification_notes = :notes
+                  WHERE id = :profile_id";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':status', $status);
+        $stmt->bindParam(':notes', $notes);
+        $stmt->bindParam(':profile_id', $profile_id);
+        
+        if (!$stmt->execute()) {
+            return false;
+        }
+        
+        // Obtener el user_id asociado a este perfil
+        $query = "SELECT user_id FROM " . $this->table . " WHERE id = :profile_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':profile_id', $profile_id);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($row) {
+            // Determinar estado de usuario según verificación
+            $user_status = ($status == 'verified') ? 'active' : (($status == 'rejected') ? 'blocked' : 'pending');
+            
+            // Actualizar el estado del usuario
+            $query = "UPDATE users SET status = :user_status WHERE id = :user_id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':user_status', $user_status);
+            $stmt->bindParam(':user_id', $row['user_id']);
+            $stmt->execute();
+        }
+        
+        return true;
+    } catch (Exception $e) {
+        error_log("Error en verificación: " . $e->getMessage());
+        return false;
+    }
 }
+
+public function getVerificationsReport($date_start = '', $date_end = '') {
+    try {
+        $sql = "SELECT sp.id as ID, 
+                       sp.full_name as 'Nombre Completo', 
+                       sp.institution as 'Institución', 
+                       sp.educational_level as 'Nivel Educativo', 
+                       sp.verification_status as 'Estado de Verificación', 
+                       sp.verification_notes as 'Notas de Verificación',  
+                       u.email as 'Correo Electrónico',
+                       u.created_at as 'Fecha de Registro'
+                FROM student_profiles sp
+                JOIN users u ON sp.user_id = u.id
+                WHERE 1=1";
+        
+        $params = [];
+        
+        // Aplicar filtros de fecha si se proporcionan
+        if (!empty($date_start)) {
+            $sql .= " AND DATE(u.created_at) >= ?";
+            $params[] = $date_start;
+        }
+        
+        if (!empty($date_end)) {
+            $sql .= " AND DATE(u.created_at) <= ?";
+            $params[] = $date_end;
+        }
+        
+        $sql .= " ORDER BY u.created_at DESC";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
+        
+        $verifications = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $verifications[] = $row;
+        }
+        
+        return $verifications;
+    } catch (PDOException $e) {
+        error_log("Error obteniendo datos de verificaciones para reporte: " . $e->getMessage());
+        return [];
+    }
+}
+
 }
 ?>

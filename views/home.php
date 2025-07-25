@@ -12,8 +12,6 @@
     </div>  
 </section>
 
-<!-- Añadir después de la sección de hero/banner -->
-
 <section class="py-12 bg-gray-50 dark:bg-gray-900">
     <div class="container mx-auto px-4">
         <div class="text-center mb-10">
@@ -22,7 +20,6 @@
         </div>
         
         <div id="featured-campaigns" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Esta sección se llenará con AJAX desde un script JS o puedes cargarla directamente desde PHP -->
             <div class="text-center py-8">
                 <div class="animate-pulse">
                     <div class="rounded-lg bg-gray-200 dark:bg-gray-700 h-40 mb-4"></div>
@@ -41,8 +38,7 @@
     </div>
 </section>
 
-<script>
-// Proceso de carga de campañas destacadas 
+<script> // Proceso de carga de campañas destacadas
 document.addEventListener('DOMContentLoaded', function() {
     fetch('api/featured_campaigns.php?action=get_featured')
         .then(response => response.json())
@@ -145,13 +141,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
             
-            <!-- Columna derecha -->
             <div class="w-full md:w-1/2">
-                <img 
-                    src="assets/img/estudiantes-2.jpg" 
-                    alt="Estudiantes exitosos" 
-                    class="rounded-lg shadow-xl w-full h-auto object-cover"
-                />
+                <img src="assets/img/estudiantes-2.jpg" alt="Estudiantes exitosos" class="rounded-lg shadow-xl w-full h-auto object-cover"/>
             </div>
         </div>
     </div>
@@ -166,17 +157,13 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-8">
       <blockquote class="rounded-lg bg-gray-50 dark:bg-gray-800 p-6 shadow-xs sm:p-8">
         <div class="flex items-center gap-4">
-          <img
-            alt=""
-            src="https://images.unsplash.com/photo-1595152772835-219674b2a8a6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80"
-            class="size-14 rounded-full object-cover"
-          />
+          <img alt="" src="https://images.unsplash.com/photo-1595152772835-219674b2a8a6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80"  class="size-14 rounded-full object-cover"/>
 
-          <div>
-            <p class="mt-0.5 text-lg font-medium text-gray-900 dark:text-white">Juan Diego García</p>
-            <div class="flex justify-center gap-0.5 text-gray-500 dark:text-gray-400">
-                <p>Estudiante de Ingeniería, UNIMAR</p>
-            </div>
+            <div>
+                <p class="mt-0.5 text-lg font-medium text-gray-900 dark:text-white">Juan Diego García</p>
+                <div class="flex justify-center gap-0.5 text-gray-500 dark:text-gray-400">
+                    <p>Estudiante de Ingeniería, UNIMAR</p>
+                </div>
             </div>
         </div>
 

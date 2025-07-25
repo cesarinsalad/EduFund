@@ -1,5 +1,19 @@
 <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6">Panel de estudiante</h1>
+    <h1 class="text-3xl font-bold mb-6 text-center dark:text-white">Panel de Estudiante</h1>
+    <!-- <p><//?php echo("{$_SESSION['user_id']}"."<br />");?></p> -->
+    <?php if(isset($_SESSION['success'])): ?>
+        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
+            <p><?php echo $_SESSION['success']; ?></p>
+            <?php unset($_SESSION['success']); ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if(isset($_SESSION['error'])): ?>
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
+            <p><?php echo $_SESSION['error']; ?></p>
+            <?php unset($_SESSION['error']); ?>
+        </div>
+    <?php endif; ?>
     
     <?php if(isset($student) && $student): ?>
         <!-- Bloque de estado de verificación -->
@@ -22,22 +36,50 @@
         </div>
     <?php endif; ?>
     
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <!-- Mis campañas -->
         <div class="bg-white p-6 rounded-lg shadow-md">
             <h2 class="text-xl font-bold mb-4 text-blue-600">Mis campañas</h2>
             
             <?php if(isset($campaigns) && !empty($campaigns)): ?>
-                <ul class="space-y-2">
+                <ul class="space-y-4">
                     <?php foreach($campaigns as $c): ?>
-                        <li class="border-b pb-2">
-                            <a href="index.php?page=campaign&id=<?php echo $c['id']; ?>" class="font-semibold hover:text-blue-600"><?php echo $c['title']; ?></a>
+                        <li class="border-b pb-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <a href="index.php?page=campaign&slug=<?php echo $c['slug']; ?>" class="font-semibold hover:text-blue-600"><?php echo $c['title']; ?></a>
+                                <div class="flex space-x-2">
+                                    <a href="index.php?page=edit_campaign&id=<?php echo $c['id']; ?>" class="text-blue-600 hover:text-blue-800" title="Editar campaña">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                    </a>
+                                    <a href="index.php?page=delete_campaign&id=<?php echo $c['id']; ?>" 
+                                       class="text-red-600 hover:text-red-800" 
+                                       title="Eliminar campaña"
+                                       onclick="return confirm('¿Estás seguro de querer eliminar esta campaña? Esta acción no se puede deshacer.')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
                             <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
                                 <div class="bg-blue-600 h-2 rounded-full" style="width: <?php echo ($c['current_amount'] / $c['goal_amount']) * 100; ?>%"></div>
                             </div>
                             <div class="flex justify-between text-sm text-gray-600 mt-1">
                                 <span>$<?php echo number_format($c['current_amount'], 2); ?> recaudados</span>
                                 <span>Meta: $<?php echo number_format($c['goal_amount'], 2); ?></span>
+                            </div>
+                            <div class="mt-2">
+                                <span class="inline-block px-2 py-1 text-xs rounded
+                                    <?php 
+                                        if($c['status'] == 'verified') echo ' bg-green-100 text-green-800';
+                                        elseif($c['status'] == 'pending') echo ' bg-yellow-100 text-yellow-800';
+                                        elseif($c['status'] == 'completed') echo ' bg-blue-100 text-blue-800';
+                                        else echo ' bg-red-100 text-red-800';
+                                    ?>">
+                                    <?php echo ucfirst($c['status']); ?>
+                                </span>
                             </div>
                         </li>
                     <?php endforeach; ?>
@@ -50,19 +92,6 @@
                 <a href="index.php?page=create_campaign" class="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Crear campaña</a>
             <?php elseif(isset($student) && $student->verification_status == 'pending'): ?>
                 <p class="text-sm italic text-gray-500 mt-2">Podrás crear campañas una vez que tu cuenta sea verificada.</p>
-            <?php endif; ?>
-        </div>
-        
-        <!-- Donaciones recibidas -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-xl font-bold mb-4 text-blue-600">Donaciones recibidas</h2>
-            <div class="flex items-center justify-center h-24">
-                <span class="text-3xl font-bold text-gray-700">$<?php echo number_format($total_donations ?? 0, 2); ?></span>
-            </div>
-            <?php if(isset($campaigns) && !empty($campaigns)): ?>
-                <div class="text-center mt-2">
-                    <a href="index.php?page=my_donations" class="text-blue-600 hover:underline">Ver detalle de donaciones</a>
-                </div>
             <?php endif; ?>
         </div>
         
@@ -79,97 +108,6 @@
             
             <a href="index.php?page=edit_profile" class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Editar perfil</a>
         </div>
-    </div>
-    
-    <!-- Pasos a seguir -->
-    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-        <h2 class="text-xl font-bold mb-4 text-blue-600">Pasos a seguir</h2>
-        
-        <ol class="relative border-l border-gray-200 ml-3 space-y-6 pt-2">
-            <!-- Paso 1: Verificación -->
-            <li class="mb-10 ml-6">
-                <span class="absolute flex items-center justify-center w-8 h-8 rounded-full -left-4 ring-4 ring-white
-                    <?php if(isset($student) && $student->verification_status == 'verified'): ?>
-                        bg-green-500 text-white
-                    <?php elseif(isset($student) && $student->verification_status == 'rejected'): ?>
-                        bg-red-500 text-white
-                    <?php elseif(isset($student) && $student->verification_status == 'pending'): ?>
-                        bg-yellow-500 text-white
-                    <?php else: ?>
-                        bg-gray-100 text-gray-500
-                    <?php endif; ?>
-                ">
-                    <?php if(isset($student) && $student->verification_status == 'verified'): ?>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                        </svg>
-                    <?php else: ?>
-                        1
-                    <?php endif; ?>
-                </span>
-                <h3 class="font-medium leading-tight">Verificación de cuenta</h3>
-                <p class="text-sm text-gray-500">
-                    <?php if(isset($student) && $student->verification_status == 'verified'): ?>
-                        ¡Cuenta verificada correctamente!
-                    <?php elseif(isset($student) && $student->verification_status == 'rejected'): ?>
-                        Tu verificación fue rechazada. Por favor, envía nuevos documentos.
-                    <?php else: ?>
-                        Espera a que verifiquemos tu cuenta. Esto puede tomar hasta 24 horas.
-                    <?php endif; ?>
-                </p>
-            </li>
-            
-            <!-- Paso 2: Completar perfil -->
-            <li class="mb-10 ml-6">
-                <span class="absolute flex items-center justify-center w-8 h-8 rounded-full -left-4 ring-4 ring-white
-                    <?php if(isset($student) && !empty($student->bio) && !empty($student->profile_picture)): ?>
-                        bg-green-500 text-white
-                    <?php else: ?>
-                        bg-gray-100 text-gray-500
-                    <?php endif; ?>
-                ">
-                    <?php if(isset($student) && !empty($student->bio) && !empty($student->profile_picture)): ?>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                        </svg>
-                    <?php else: ?>
-                        2
-                    <?php endif; ?>
-                </span>
-                <h3 class="font-medium leading-tight">Completar información de perfil</h3>
-                <p class="text-sm text-gray-500">Añade una foto de perfil y una biografía detallada para aumentar tus posibilidades de recibir apoyo.</p>
-            </li>
-            
-            <!-- Paso 3: Crear campaña -->
-            <li class="mb-10 ml-6">
-                <span class="absolute flex items-center justify-center w-8 h-8 rounded-full -left-4 ring-4 ring-white
-                    <?php if(isset($campaigns) && !empty($campaigns)): ?>
-                        bg-green-500 text-white
-                    <?php else: ?>
-                        bg-gray-100 text-gray-500
-                    <?php endif; ?>
-                ">
-                    <?php if(isset($campaigns) && !empty($campaigns)): ?>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                        </svg>
-                    <?php else: ?>
-                        3
-                    <?php endif; ?>
-                </span>
-                <h3 class="font-medium leading-tight">Crear tu primera campaña</h3>
-                <p class="text-sm text-gray-500">Detalla tus necesidades educativas y establece una meta realista.</p>
-            </li>
-            
-            <!-- Paso 4: Compartir campaña -->
-            <li class="ml-6">
-                <span class="absolute flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full -left-4 ring-4 ring-white text-gray-500">
-                    4
-                </span>
-                <h3 class="font-medium leading-tight">Compartir en redes sociales</h3>
-                <p class="text-sm text-gray-500">Difunde tu campaña para llegar a más personas y aumentar tus posibilidades de recibir donaciones.</p>
-            </li>
-        </ol>
     </div>
     
     <?php if(isset($campaigns) && !empty($campaigns)): ?>

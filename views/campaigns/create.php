@@ -34,17 +34,17 @@ include_once 'includes/header.php';
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         required>
                     <option value="">Selecciona una categoría</option>
-                    <option value="Licenciatura" <?php echo (isset($_POST['category']) && $_POST['category'] == 'Licenciatura') ? 'selected' : ''; ?>>Licenciatura</option>
-                    <option value="Maestría" <?php echo (isset($_POST['category']) && $_POST['category'] == 'Maestría') ? 'selected' : ''; ?>>Maestría</option>
-                    <option value="Doctorado" <?php echo (isset($_POST['category']) && $_POST['category'] == 'Doctorado') ? 'selected' : ''; ?>>Doctorado</option>
-                    <option value="Diplomado" <?php echo (isset($_POST['category']) && $_POST['category'] == 'Diplomado') ? 'selected' : ''; ?>>Diplomado</option>
-                    <option value="Material Educativo" <?php echo (isset($_POST['category']) && $_POST['category'] == 'Material Educativo') ? 'selected' : ''; ?>>Material Educativo</option>
-                    <option value="Otros" <?php echo (isset($_POST['category']) && $_POST['category'] == 'Otros') ? 'selected' : ''; ?>>Otros</option>
+                    <option value="Material Didáctico" <?php echo (isset($_POST['category']) && $_POST['category'] == 'Material Didáctico') ? 'selected' : ''; ?>>Material Didáctico</option>
+                    <option value="Equipos Electrónicos" <?php echo (isset($_POST['category']) && $_POST['category'] == 'Equipos Electrónicos') ? 'selected' : ''; ?>>Equipos Electrónicos</option>
+                    <option value="Investigación y Desarrollo" <?php echo (isset($_POST['category']) && $_POST['category'] == 'Investigación y Desarrollo') ? 'selected' : ''; ?>>Investigación y Desarrollo</option>
+                    <option value="Viajes Educativos" <?php echo (isset($_POST['category']) && $_POST['category'] == 'Viajes Educativos') ? 'selected' : ''; ?>>Viajes Educativos</option>
+                    <option value="Talleres y Capacitaciones" <?php echo (isset($_POST['category']) && $_POST['category'] == 'Talleres y Capacitaciones') ? 'selected' : ''; ?>>Talleres y Capacitaciones</option>
+                    <option value="Matrícula" <?php echo (isset($_POST['category']) && $_POST['category'] == 'Matrícula') ? 'selected' : ''; ?>>Matrícula</option>
                 </select>
             </div>
             
             <div>
-                <label for="goal_amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Monto Objetivo (MXN) *</label>
+                <label for="goal_amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Monto Objetivo (USD) *</label>
                 <div class="mt-1 relative rounded-md shadow-sm">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <span class="text-gray-500 sm:text-sm">$</span>

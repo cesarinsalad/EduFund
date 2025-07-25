@@ -196,5 +196,53 @@ public function updateStatus($user_id, $status) {
     
     return $result;
 }
+
+public function getReportData($date_start = '', $date_end = '') {
+    try {
+        $sql = "SELECT id, username as 'Usuario', email as 'Correo', role as 'Rol', 
+                status as 'Estado', created_at as 'Fecha de Registro', 
+                updated_at as 'Última Actualización'
+                FROM users
+                WHERE 1=1";
+        
+        $params = [];
+        
+        // Aplicar filtros de fecha si se proporcionan
+        if (!empty($date_start)) {
+            $sql .= " AND DATE(created_at) >= ?";
+            $params[] = $date_start;
+        }
+        
+        if (!empty($date_end)) {
+            $sql .= " AND DATE(created_at) <= ?";
+            $params[] = $date_end;
+        }
+        
+        $sql .= " ORDER BY created_at DESC";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
+        
+        $users = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            // Formatear los datos para el reporte
+            $users[] = [
+                'ID' => $row['id'],
+                'Usuario' => $row['Usuario'],
+                'Correo' => $row['Correo'],
+                'Rol' => ucfirst($row['Rol']),
+                'Estado' => ucfirst($row['Estado']),
+                'Fecha de Registro' => date('d/m/Y', strtotime($row['Fecha de Registro'])),
+                'Última Actualización' => date('d/m/Y H:i', strtotime($row['Última Actualización']))
+            ];
+        }
+        
+        return $users;
+    } catch (PDOException $e) {
+        error_log("Error obteniendo datos de usuarios para reporte: " . $e->getMessage());
+        return [];
+    }
+}
+
 }
 ?>
